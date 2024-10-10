@@ -16,12 +16,13 @@ body {
 
 
 body.light-mode {
-    background-color: #f2f6f9;
+    background-color: #A2D948 ;
     color: rgba(0, 0, 0, 0.77);
 }
 
 body.dark-mode {
-    background-color: #121212;
+    
+    background-color: #21402A ;
     color: white;
 }
 
@@ -83,6 +84,7 @@ h6 {
     background-size: cover;
     border-radius: 50%;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    background-color: #000;
 }
 
 .links {

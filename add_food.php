@@ -23,44 +23,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (!is_numeric($price) || $price <= 0) {
         $error = 'Please enter a valid price';
     } else {
-        // Handle file upload
-        $targetDir = "uploads/";
-        $targetFile = $targetDir . basename($image["name"]);
-        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+        // Check for duplicate price
+        $checkPriceSql = "SELECT * FROM foods WHERE price = '$price'";
+        $result = $conn->query($checkPriceSql);
+        
+        if ($result->num_rows > 0) {
+            $error = "A food item with this price already exists.";
+        } else {
+            // Handle file upload
+            $targetDir = "uploads/";
+            $targetFile = $targetDir . basename($image["name"]);
+            $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
-        // Check if image file is an actual image or fake image
-        $check = getimagesize($image["tmp_name"]);
-        if ($check === false) {
-            $error = "File is not an image.";
-        }
+            // Check if image file is an actual image or fake image
+            $check = getimagesize($image["tmp_name"]);
+            if ($check === false) {
+                $error = "File is not an image.";
+            }
 
-        // Check if file already exists
-        if (file_exists($targetFile)) {
-            $error = "Sorry, file already exists.";
-        }
+            // Check file size (5MB limit)
+            if ($image["size"] > 5000000) {
+                $error = "Sorry, your file is too large.";
+            }
 
-        // Check file size (5MB limit)
-        if ($image["size"] > 5000000) {
-            $error = "Sorry, your file is too large.";
-        }
+            // Allow certain file formats
+            if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+                $error = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+            }
 
-        // Allow certain file formats
-        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-            $error = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-        }
-
-        // Check if $error is empty to proceed with upload
-        if (empty($error)) {
-            if (move_uploaded_file($image["tmp_name"], $targetFile)) {
-                // Insert food item into database
-                $sql = "INSERT INTO foods (name, image, price) VALUES ('$name', '$targetFile', '$price')";
-                if ($conn->query($sql) === TRUE) {
-                    $success = "Food item added successfully!";
+            // Check if $error is empty to proceed with upload
+            if (empty($error)) {
+                if (move_uploaded_file($image["tmp_name"], $targetFile)) {
+                    // Insert food item into database
+                    $sql = "INSERT INTO foods (name, image, price) VALUES ('$name', '$targetFile', '$price')";
+                    if ($conn->query($sql) === TRUE) {
+                        $success = "Food item added successfully!";
+                    } else {
+                        $error = "Error: " . $sql . "<br>" . $conn->error;
+                    }
                 } else {
-                    $error = "Error: " . $sql . "<br>" . $conn->error;
+                    $error = "Sorry, there was an error uploading your file.";
                 }
-            } else {
-                $error = "Sorry, there was an error uploading your file.";
             }
         }
     }
@@ -68,7 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html>

@@ -49,8 +49,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background-image: url(../images/logo.png);
             background-position: center;
             background-repeat: no-repeat;
-            background-size: cover;
+            background-size: contain;
             border-radius: 50%;
+            background-color: #000;
         }
     </style>
 </head>

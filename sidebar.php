@@ -11,9 +11,10 @@
     background-image: url(../images/logo.png);
     background-position: center;
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: contain;
     border-radius: 50%;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    background-color: #000;
 }
     </style>
 </style>
